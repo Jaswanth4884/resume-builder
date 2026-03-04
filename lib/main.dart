@@ -157,7 +157,60 @@ class _ResumeHomeState extends State<ResumeHome> {
           // RIGHT — PREVIEW
           Expanded(
             flex: 4,
-            child: _buildPreviewSection(),
+            child: Column(
+              children: [
+                // Action buttons at top right
+                Container(
+                  margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      // Download as PDF button
+                      Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        child: ElevatedButton.icon(
+                          onPressed: _downloadAsPDF,
+                          icon: const Icon(Icons.download, size: 18),
+                          label: const Text(
+                            "Download PDF",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6B8E7F),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Copy as link button
+                      ElevatedButton.icon(
+                        onPressed: _copyAsLink,
+                        icon: const Icon(Icons.link, size: 18),
+                        label: const Text(
+                          "Copy Link",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF8E6B7F),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Resume preview
+                Expanded(
+                  child: _buildPreviewSection(),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -405,40 +458,6 @@ class _ResumeHomeState extends State<ResumeHome> {
                         ),
                       ),
                       const Spacer(),
-                      // Download as PDF button
-                      Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        child: ElevatedButton.icon(
-                          onPressed: _downloadAsPDF,
-                          icon: const Icon(Icons.download, size: 16),
-                          label: const Text(
-                            "PDF",
-                            style: TextStyle(fontSize: 11),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.2),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            minimumSize: Size.zero,
-                          ),
-                        ),
-                      ),
-                      // Copy as link button
-                      ElevatedButton.icon(
-                        onPressed: _copyAsLink,
-                        icon: const Icon(Icons.link, size: 16),
-                        label: const Text(
-                          "Link",
-                          style: TextStyle(fontSize: 11),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.2),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          minimumSize: Size.zero,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
