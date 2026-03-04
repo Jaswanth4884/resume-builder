@@ -62,23 +62,42 @@ class _ResumeHomeState extends State<ResumeHome> {
   
   // Custom sections (user-added)
   List<Map<String, String>> customSections = [];
+  // Collapsible state for all sections
+  bool isPersonalExpanded = true;
+  bool isSkillsExpanded = true;
+  bool isExperienceExpanded = true;
+  bool isProjectsExpanded = true;
+  bool isEducationExpanded = true;
+  bool isAchievementsExpanded = true;
+  bool isStrengthsExpanded = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5E8),
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         centerTitle: true,
-        elevation: 0,
+        elevation: 2,
         title: const Text(
           "Professional Resume Builder",
           style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF2D3748),
-            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            fontSize: 22,
+            letterSpacing: 0.5,
           ),
         ),
-        backgroundColor: const Color(0xFFE8F5E8),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [const Color(0xFF6B8E7F), const Color(0xFF557A6E)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        backgroundColor: const Color(0xFF6B8E7F),
+        shadowColor: Colors.black.withOpacity(0.15),
       ),
       body: Row(
         children: [
@@ -86,28 +105,37 @@ class _ResumeHomeState extends State<ResumeHome> {
           Expanded(
             flex: 3,
             child: Container(
-              margin: const EdgeInsets.all(16),
+              margin: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8FFF0),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFB8E6C1)),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 1),
                   ),
                 ],
               ),
               child: Column(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF6B8E7F),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [const Color(0xFF6B8E7F), const Color(0xFF5A7A6D)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
                       ),
                     ),
                     width: double.infinity,
@@ -116,28 +144,33 @@ class _ResumeHomeState extends State<ResumeHome> {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.3,
                       ),
                     ),
                   ),
                   Expanded(
                     child: Column(
                       children: [
-                        // Extra Editing Features Button
-                        Container(
-                          width: double.infinity,
-                          margin: const EdgeInsets.all(16),
+                        // Extra Editing Features Button (now compact and visible)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           child: ElevatedButton.icon(
                             onPressed: _showExtraEditingDialog,
-                            icon: const Icon(Icons.palette, size: 20),
-                            label: const Text("Extra Editing Features"),
+                            icon: const Icon(Icons.palette, size: 18),
+                            label: const Text(
+                              "Extra Features",
+                              style: TextStyle(fontSize: 13),
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF6B8E7F),
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
+                              elevation: 2,
+                              shadowColor: Colors.black.withOpacity(0.2),
                             ),
                           ),
                         ),
@@ -168,229 +201,516 @@ class _ResumeHomeState extends State<ResumeHome> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Personal Information
-        _sectionHeader("Personal Information"),
-        _customTextField("Full Name", (v) => setState(() => data.name = v)),
-        _customTextField("Street Address", (v) => setState(() => data.street = v)),
-        _customTextField("City, State", (v) => setState(() => data.city = v)),
-        _customTextField("Zip Code", (v) => setState(() => data.zipCode = v)),
-        _customTextField("Phone", (v) => setState(() => data.phone = v)),
-        _customTextField("Email", (v) => setState(() => data.email = v)),
-        _customTextField("LinkedIn URL", (v) => setState(() => data.linkedin = v)),
-        _customTextField("LinkedIn Display Name", (v) => setState(() => data.linkedinName = v)),
-        _customTextField("GitHub URL", (v) => setState(() => data.github = v)),
-        _customTextField("GitHub Display Name", (v) => setState(() => data.githubName = v)),
+        // Personal Information (collapsible)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: InkWell(
+            onTap: () => setState(() => isPersonalExpanded = !isPersonalExpanded),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Personal Information",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+                Icon(
+                  isPersonalExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                  color: const Color(0xFF2D3748),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (isPersonalExpanded) ...[
+          _customTextField("Full Name", (v) => setState(() => data.name = v)),
+          _customTextField("Phone", (v) => setState(() => data.phone = v)),
+          _customTextField("Email", (v) => setState(() => data.email = v)),
+          _customTextField("LinkedIn URL", (v) => setState(() => data.linkedin = v)),
+          _customTextField("LinkedIn Display Name", (v) => setState(() => data.linkedinName = v)),
+          _customTextField("GitHub URL", (v) => setState(() => data.github = v)),
+          _customTextField("GitHub Display Name", (v) => setState(() => data.githubName = v)),
+        ],
+        const SizedBox(height: 20),
+        
+        // Skills (collapsible)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: InkWell(
+            onTap: () => setState(() => isSkillsExpanded = !isSkillsExpanded),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Skills",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+                Icon(
+                  isSkillsExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                  color: const Color(0xFF2D3748),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (isSkillsExpanded) ...[  
+          _customTextField("Languages", (v) => setState(() => data.languages = v)),
+          _customTextField("Frameworks and Databases", (v) => setState(() => data.frameworks = v)),
+          _customTextField("Tools and Technologies", (v) => setState(() => data.tools = v)),
+          _customTextField("Others", (v) => setState(() => data.others = v)),
+        ],
         
         const SizedBox(height: 20),
         
-        // Skills
-        _sectionHeader("Skills"),
-        _customTextField("Languages", (v) => setState(() => data.languages = v)),
-        _customTextField("Frameworks and Databases", (v) => setState(() => data.frameworks = v)),
-        _customTextField("Tools and Technologies", (v) => setState(() => data.tools = v)),
-        _customTextField("Others", (v) => setState(() => data.others = v)),
+        // Experience (collapsible)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: InkWell(
+            onTap: () => setState(() => isExperienceExpanded = !isExperienceExpanded),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Experience",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+                Icon(
+                  isExperienceExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                  color: const Color(0xFF2D3748),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (isExperienceExpanded) ...[
+          ...data.experiences.asMap().entries.map((entry) {
+            int index = entry.key;
+            ExperienceItem experience = entry.value;
+            return Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0FFF4),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFB8E6C1)),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Experience ${index + 1}",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF2D3748),
+                          ),
+                        ),
+                      ),
+                      if (data.experiences.length > 1)
+                        IconButton(
+                          onPressed: () => _removeExperience(index),
+                          icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  _customTextField("Company Name", (v) => setState(() => experience.companyName = v)),
+                  _customTextField("Job Title", (v) => setState(() => experience.jobTitle = v)),
+                  _customTextField("Location", (v) => setState(() => experience.location = v)),
+                  _customTextField("Duration", (v) => setState(() => experience.duration = v)),
+                  _customTextField("Description", (v) => setState(() => experience.description = v), lines: 3),
+                ],
+              ),
+            );
+          }).toList(),
+          _addButton("Add Experience", _addExperience),
+        ],
         
         const SizedBox(height: 20),
         
-        // Experience
-        _sectionHeader("Experience"),
-        ...data.experiences.asMap().entries.map((entry) {
-          int index = entry.key;
-          ExperienceItem experience = entry.value;
-          return Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(12),
+        // Projects (collapsible)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: InkWell(
+            onTap: () => setState(() => isProjectsExpanded = !isProjectsExpanded),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Projects",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+                Icon(
+                  isProjectsExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                  color: const Color(0xFF2D3748),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (isProjectsExpanded) ...[
+          ...data.projects.asMap().entries.map((entry) {
+            int index = entry.key;
+            ProjectItem project = entry.value;
+            return Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0FFF4),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFB8E6C1)),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Project ${index + 1}",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF2D3748),
+                          ),
+                        ),
+                      ),
+                      if (data.projects.length > 1)
+                        IconButton(
+                          onPressed: () => _removeProject(index),
+                          icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  _customTextField("Project Title", (v) => setState(() => project.title = v)),
+                  _customTextField("Project Description", (v) => setState(() => project.description = v), lines: 3),
+                ],
+              ),
+            );
+          }).toList(),
+          _addButton("Add Project", _addProject),
+        ],
+        const SizedBox(height: 20),
+
+        // Education (collapsible)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: InkWell(
+            onTap: () => setState(() => isEducationExpanded = !isEducationExpanded),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Education",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+                Icon(
+                  isEducationExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                  color: const Color(0xFF2D3748),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (isEducationExpanded) ...[
+          // University block
+          Container(
+            margin: const EdgeInsets.only(bottom: 14),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFF0FFF4),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFB8E6C1)),
+              color: const Color(0xFFFAFBFC),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFFE2E8F0),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Column(
               children: [
                 Row(
-                  children: [
+                  children: const [
                     Expanded(
                       child: Text(
-                        "Experience ${index + 1}",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
+                        "University",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
                           color: Color(0xFF2D3748),
+                          fontSize: 15,
                         ),
                       ),
                     ),
-                    if (data.experiences.length > 1)
-                      IconButton(
-                        onPressed: () => _removeExperience(index),
-                        icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                _customTextField("Company Name", (v) => setState(() => experience.companyName = v)),
-                _customTextField("Job Title", (v) => setState(() => experience.jobTitle = v)),
-                _customTextField("Location", (v) => setState(() => experience.location = v)),
-                _customTextField("Duration", (v) => setState(() => experience.duration = v)),
-                _customTextField("Description", (v) => setState(() => experience.description = v), lines: 3),
+                const SizedBox(height: 12),
+                _customTextField("University Name", (v) => setState(() => data.university = v)),
+                _customTextField("University GPA", (v) => setState(() => data.universityGPA = v)),
+                _customTextField("University Location", (v) => setState(() => data.universityLocation = v)),
+                _customTextField("University Duration", (v) => setState(() => data.universityDuration = v)),
               ],
             ),
-          );
-        }).toList(),
-        _addButton("Add Experience", _addExperience),
-        
-        const SizedBox(height: 20),
-        
-        // Projects
-        _sectionHeader("Projects"),
-        ...data.projects.asMap().entries.map((entry) {
-          int index = entry.key;
-          ProjectItem project = entry.value;
-          return Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(12),
+          ),
+
+          // College block
+          Container(
+            margin: const EdgeInsets.only(bottom: 14),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFF0FFF4),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFB8E6C1)),
+              color: const Color(0xFFFAFBFC),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFFE2E8F0),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Column(
               children: [
                 Row(
-                  children: [
+                  children: const [
                     Expanded(
                       child: Text(
-                        "Project ${index + 1}",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
+                        "College",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
                           color: Color(0xFF2D3748),
+                          fontSize: 15,
                         ),
                       ),
                     ),
-                    if (data.projects.length > 1)
-                      IconButton(
-                        onPressed: () => _removeProject(index),
-                        icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                _customTextField("Project Title", (v) => setState(() => project.title = v)),
-                _customTextField("Project Description", (v) => setState(() => project.description = v), lines: 3),
+                const SizedBox(height: 12),
+                _customTextField("College Name", (v) => setState(() => data.college = v)),
+                _customTextField("College GPA", (v) => setState(() => data.collegeGPA = v)),
+                _customTextField("College Location", (v) => setState(() => data.collegeLocation = v)),
+                _customTextField("College Duration", (v) => setState(() => data.collegeDuration = v)),
               ],
             ),
-          );
-        }).toList(),
-        _addButton("Add Project", _addProject),
-        
-        const SizedBox(height: 20),
-        
-        // Education
-        _sectionHeader("Education"),
-        _customTextField("University Name", (v) => setState(() => data.university = v)),
-        _customTextField("University GPA", (v) => setState(() => data.universityGPA = v)),
-        _customTextField("University Location", (v) => setState(() => data.universityLocation = v)),
-        _customTextField("University Duration", (v) => setState(() => data.universityDuration = v)),
-        
-        _customTextField("College Name", (v) => setState(() => data.college = v)),
-        _customTextField("College GPA", (v) => setState(() => data.collegeGPA = v)),
-        _customTextField("College Location", (v) => setState(() => data.collegeLocation = v)),
-        _customTextField("College Duration", (v) => setState(() => data.collegeDuration = v)),
-        
-        _customTextField("High School Name", (v) => setState(() => data.highSchool = v)),
-        _customTextField("High School GPA", (v) => setState(() => data.highSchoolGPA = v)),
-        _customTextField("High School Location", (v) => setState(() => data.highSchoolLocation = v)),
-        _customTextField("High School Duration", (v) => setState(() => data.highSchoolDuration = v)),
-        
-        const SizedBox(height: 20),
-        
-        // Achievements
-        _sectionHeader("Achievements"),
-        ...data.achievements.asMap().entries.map((entry) {
-          int index = entry.key;
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _customTextField("Achievement ${index + 1}", (v) => setState(() => data.achievements[index] = v)),
+          ),
+
+          // High School block
+          Container(
+            margin: const EdgeInsets.only(bottom: 14),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFAFBFC),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFFE2E8F0),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
-                if (data.achievements.length > 1)
-                  IconButton(
-                    onPressed: () => _removeAchievement(index),
-                    icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
               ],
             ),
-          );
-        }).toList(),
-        _addButton("Add Achievement", _addAchievement),
-        
+            child: Column(
+              children: [
+                Row(
+                  children: const [
+                    Expanded(
+                      child: Text(
+                        "High School",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2D3748),
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _customTextField("High School Name", (v) => setState(() => data.highSchool = v)),
+                _customTextField("High School GPA", (v) => setState(() => data.highSchoolGPA = v)),
+                _customTextField("High School Location", (v) => setState(() => data.highSchoolLocation = v)),
+                _customTextField("High School Duration", (v) => setState(() => data.highSchoolDuration = v)),
+              ],
+            ),
+          ),
+        ],
         const SizedBox(height: 20),
         
-        // Strengths
-        _sectionHeader("Strengths"),
-        ...data.strengths.asMap().entries.map((entry) {
-          int index = entry.key;
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
+        // Achievements (collapsible)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: InkWell(
+            onTap: () => setState(() => isAchievementsExpanded = !isAchievementsExpanded),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: _customTextField("Strength ${index + 1}", (v) => setState(() => data.strengths[index] = v)),
-                ),
-                if (data.strengths.length > 1)
-                  IconButton(
-                    onPressed: () => _removeStrength(index),
-                    icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
+                const Text(
+                  "Achievements",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3748),
                   ),
+                ),
+                Icon(
+                  isAchievementsExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                  color: const Color(0xFF2D3748),
+                ),
               ],
             ),
-          );
-        }).toList(),
-        _addButton("Add Strength", _addStrength),
+          ),
+        ),
+        if (isAchievementsExpanded) ...[
+          ...data.achievements.asMap().entries.map((entry) {
+            int index = entry.key;
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _customTextField("Achievement ${index + 1}", (v) => setState(() => data.achievements[index] = v)),
+                  ),
+                  if (data.achievements.length > 1)
+                    IconButton(
+                      onPressed: () => _removeAchievement(index),
+                      icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                ],
+              ),
+            );
+          }).toList(),
+          _addButton("Add Achievement", _addAchievement),
+        ],
+        const SizedBox(height: 20),
+        
+        // Strengths (collapsible)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: InkWell(
+            onTap: () => setState(() => isStrengthsExpanded = !isStrengthsExpanded),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Strengths",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+                Icon(
+                  isStrengthsExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+                  color: const Color(0xFF2D3748),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (isStrengthsExpanded) ...[
+          ...data.strengths.asMap().entries.map((entry) {
+            int index = entry.key;
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _customTextField("Strength ${index + 1}", (v) => setState(() => data.strengths[index] = v)),
+                  ),
+                  if (data.strengths.length > 1)
+                    IconButton(
+                      onPressed: () => _removeStrength(index),
+                      icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                ],
+              ),
+            );
+          }).toList(),
+          _addButton("Add Strength", _addStrength),
+        ],
       ],
     );
   }
 
   Widget _buildPreviewSection() {
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(20),
       child: Center(
         child: AspectRatio(
-          aspectRatio: 210 / 297, // A4 aspect ratio (width/height)
+          aspectRatio: 210 / 297,
           child: Container(
             constraints: const BoxConstraints(
-              maxWidth: 580, // Slightly reduced A4 width for better margins
-              maxHeight: 820, // Slightly reduced A4 height for better fit
+              maxWidth: 580,
+              maxHeight: 820,
             ),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 24,
                   offset: const Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF8E6B7F),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(8),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [const Color(0xFF8E6B7F), const Color(0xFF7A5E6B)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
                     ),
                   ),
                   width: double.infinity,
@@ -1305,10 +1625,6 @@ class _ResumeHomeState extends State<ResumeHome> {
                         '${data.linkedinName} • ${data.githubName}',
                         style: pw.TextStyle(fontSize: bodyTextSize),
                       ),
-                    pw.Text(
-                      '${data.street}, ${data.city}, ${data.zipCode}',
-                      style: pw.TextStyle(fontSize: bodyTextSize),
-                    ),
                     pw.SizedBox(height: 12),
                     pw.Container(
                       height: 1,
@@ -1457,7 +1773,6 @@ class _ResumeHomeState extends State<ResumeHome> {
     if (data.linkedinName.isNotEmpty && data.githubName.isNotEmpty) {
       text += '${data.linkedinName} • ${data.githubName}\n';
     }
-    text += '${data.street}, ${data.city}, ${data.zipCode}\n';
     text += '${'=' * 50}\n\n';
     
     // Sections
@@ -1634,10 +1949,7 @@ class _ResumeHomeState extends State<ResumeHome> {
                 style: pw.TextStyle(fontSize: bodyTextSize),
               ),
               pw.SizedBox(height: 4),
-              pw.Text(
-                experience.description,
-                style: pw.TextStyle(fontSize: bodyTextSize),
-              ),
+              _buildPDFBulletList(experience.description),
               pw.SizedBox(height: 12),
             ],
           );
@@ -1675,10 +1987,7 @@ class _ResumeHomeState extends State<ResumeHome> {
                 ),
               ),
               pw.SizedBox(height: 4),
-              pw.Text(
-                project.description,
-                style: pw.TextStyle(fontSize: bodyTextSize),
-              ),
+              _buildPDFBulletList(project.description),
               pw.SizedBox(height: 12),
             ],
           );
@@ -1738,6 +2047,29 @@ class _ResumeHomeState extends State<ResumeHome> {
     );
   }
 
+  pw.Widget _buildPDFBulletList(String text) {
+    if (text.trim().isEmpty) return pw.SizedBox();
+    final lines = text.split(RegExp(r'[\r\n]+')).map((l) => l.trim()).where((l) => l.isNotEmpty).toList();
+    if (lines.isEmpty) return pw.SizedBox();
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: lines.map((line) {
+        return pw.Padding(
+          padding: const pw.EdgeInsets.only(bottom: 4),
+          child: pw.Row(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text('• ', style: pw.TextStyle(fontSize: bodyTextSize)),
+              pw.Expanded(
+                child: pw.Text(line, style: pw.TextStyle(fontSize: bodyTextSize)),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   pw.Widget _buildPDFAchievementsSection() {
     if (data.achievements.every((ach) => ach.trim().isEmpty)) {
       return pw.SizedBox();
@@ -1757,13 +2089,29 @@ class _ResumeHomeState extends State<ResumeHome> {
         ...data.achievements.where((ach) => ach.trim().isNotEmpty).map((achievement) {
           return pw.Padding(
             padding: const pw.EdgeInsets.only(bottom: 4),
-            child: pw.Text(
-              '• $achievement',
-              style: pw.TextStyle(fontSize: bodyTextSize),
+            child: pw.Row(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Container(
+                  width: 6,
+                  height: 6,
+                  margin: const pw.EdgeInsets.only(top: 6, right: 6),
+                  decoration: const pw.BoxDecoration(
+                    shape: pw.BoxShape.circle,
+                    color: PdfColors.black,
+                  ),
+                ),
+                pw.Expanded(
+                  child: pw.Text(
+                    achievement,
+                    style: pw.TextStyle(fontSize: bodyTextSize),
+                  ),
+                ),
+              ],
             ),
           );
         }).toList(),
-        pw.SizedBox(height: 20),
+        pw.SizedBox(height: 8),
       ],
     );
   }
@@ -1787,13 +2135,29 @@ class _ResumeHomeState extends State<ResumeHome> {
         ...data.strengths.where((str) => str.trim().isNotEmpty).map((strength) {
           return pw.Padding(
             padding: const pw.EdgeInsets.only(bottom: 4),
-            child: pw.Text(
-              '• $strength',
-              style: pw.TextStyle(fontSize: bodyTextSize),
+            child: pw.Row(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Container(
+                  width: 6,
+                  height: 6,
+                  margin: const pw.EdgeInsets.only(top: 6, right: 6),
+                  decoration: const pw.BoxDecoration(
+                    shape: pw.BoxShape.circle,
+                    color: PdfColors.black,
+                  ),
+                ),
+                pw.Expanded(
+                  child: pw.Text(
+                    strength,
+                    style: pw.TextStyle(fontSize: bodyTextSize),
+                  ),
+                ),
+              ],
             ),
           );
         }).toList(),
-        pw.SizedBox(height: 20),
+        pw.SizedBox(height: 8),
       ],
     );
   }
@@ -1856,20 +2220,6 @@ class _ResumeHomeState extends State<ResumeHome> {
           ],
         ),
         
-        const SizedBox(height: 8),
-        
-        // Address
-        Text(
-          "${data.street}, ${data.city}, ${data.zipCode}",
-          style: TextStyle(
-            fontSize: bodyTextSize,
-            color: bodyTextColor,
-          ),
-          textAlign: TextAlign.center,
-          softWrap: true,
-          overflow: TextOverflow.visible,
-        ),
-        
         // Line separator
         const SizedBox(height: 12),
         Container(
@@ -1884,29 +2234,14 @@ class _ResumeHomeState extends State<ResumeHome> {
   Widget _contactItem(String icon, String text, Color color, {bool isClickable = false, String? url}) {
     if (text.trim().isEmpty) return const SizedBox();
     
-    Widget textWidget = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (icon.isNotEmpty) ...[
-          Text(
-            icon,
-            style: TextStyle(fontSize: bodyTextSize),
-          ),
-          const SizedBox(width: 4),
-        ],
-        Flexible(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: bodyTextSize,
-              color: color,
-              fontWeight: FontWeight.w500,
-              decoration: isClickable ? TextDecoration.underline : TextDecoration.none,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
+    Widget textWidget = Text(
+      text,
+      style: TextStyle(
+        fontSize: bodyTextSize,
+        color: color,
+        decoration: isClickable ? TextDecoration.underline : TextDecoration.none,
+      ),
+      overflow: TextOverflow.ellipsis,
     );
     
     if (isClickable && url != null && url.isNotEmpty) {
@@ -1917,7 +2252,6 @@ class _ResumeHomeState extends State<ResumeHome> {
             if (await canLaunchUrl(uri)) {
               await launchUrl(uri);
             } else {
-              // Show error dialog if URL can't be launched
               if (context.mounted) {
                 showDialog(
                   context: context,
@@ -1935,7 +2269,6 @@ class _ResumeHomeState extends State<ResumeHome> {
               }
             }
           } catch (e) {
-            // Show error dialog for invalid URLs
             if (context.mounted) {
               showDialog(
                 context: context,
@@ -2286,18 +2619,28 @@ class _ResumeHomeState extends State<ResumeHome> {
   Widget _addButton(String text, VoidCallback onPressed) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 14),
       child: OutlinedButton.icon(
         onPressed: onPressed,
         icon: const Icon(Icons.add, size: 18),
-        label: Text(text),
+        label: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         style: OutlinedButton.styleFrom(
           foregroundColor: const Color(0xFF6B8E7F),
-          side: const BorderSide(color: Color(0xFF6B8E7F)),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+          side: const BorderSide(
+            color: Color(0xFF6B8E7F),
+            width: 1.5,
           ),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          surfaceTintColor: const Color(0xFF6B8E7F).withOpacity(0.05),
         ),
       ),
     );
@@ -2319,39 +2662,55 @@ class _ResumeHomeState extends State<ResumeHome> {
 
   Widget _customTextField(String label, Function(String) onChanged, {int lines = 1}) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 14),
       child: TextField(
         maxLines: lines,
         onChanged: onChanged,
         style: const TextStyle(
           color: Color(0xFF2D3748),
           fontSize: 14,
+          height: 1.5,
         ),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(
             color: Color(0xFF718096),
-            fontSize: 14,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10),
             borderSide: const BorderSide(
-              color: Color(0xFFB8E6C1),
-              width: 1,
+              color: Color(0xFFE2E8F0),
+              width: 1.5,
             ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10),
             borderSide: const BorderSide(
               color: Color(0xFF6B8E7F),
               width: 2,
             ),
           ),
           filled: true,
-          fillColor: const Color(0xFFF0FFF4),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
+          fillColor: const Color(0xFFFAFBFC),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(
+              color: Colors.redAccent,
+              width: 1.5,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(
+              color: Colors.red,
+              width: 2,
+            ),
           ),
         ),
       ),
