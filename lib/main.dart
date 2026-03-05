@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'resume_model.dart';
+import 'RegisterScreen.dart';
 
 void main() => runApp(const ProResumeApp());
 
@@ -18,7 +19,7 @@ class ProResumeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ResumeHome(),
+      home: RegisterScreen(),
     );
   }
 }
